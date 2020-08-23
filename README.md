@@ -125,23 +125,22 @@ After importing the necessary modules to pre-process and construct the model, I 
 To improve the accuracy of the overall RNN, I attempted to fiter the data of any 'neutral' text, meaning text that did not show negativity or positivity.
 This resulted in only valid text and words remained in the dataset therefore improving the overall accuracy.
 
-<pre><code>data = pd.read_csv('training_data.csv')
-data = data[['Text','Sentiment']]
+<pre><code>trainingData = pd.read_csv('training_data.csv')
+trainingData = trainingData[['Text','Sentiment']]
+trainingData = trainingData[trainingData.Sentiment != "Neutral"]
+trainingData['Text'] = trainingData['Text'].apply(lambda x: x.lower())
+trainingData['Text'] = trainingData['Text'].apply((lambda x: re.sub('[^a-zA-z0-9\s]','',x)))
 
-data = data[data.Sentiment != "Neutral"]
-data['Text'] = data['Text'].apply(lambda x: x.lower())
-data['Text'] = data['Text'].apply((lambda x: re.sub('[^a-zA-z0-9\s]','',x)))
+print(trainingData[ trainingData['Sentiment'] == 'Positive'].size)
+print(trainingData[ trainingData['Sentiment'] == 'Negative'].size)
 
-print(data[ data['Sentiment'] == 'Positive'].size)
-print(data[ data['Sentiment'] == 'Negative'].size)
-
-for idx,row in data.iterrows():
+for idx,row in trainingData.iterrows():
     row[0] = row[0].replace('rt',' ')
     
-max_fatures = 2000
-tokenizer = Tokenizer(num_words=max_fatures, split=' ')
-tokenizer.fit_on_texts(data['Text'].values)
-X = tokenizer.texts_to_sequences(data['Text'].values)
+max_features = 2000
+tok = Tokenizer(num_words=max_features, split=' ')
+tok.fit_on_texts(trainingData['Text'].values)
+X = tok.texts_to_sequences(trainingData['Text'].values)
 X = pad_sequences(X)
 </code></pre>
 
@@ -150,7 +149,7 @@ The Sequential Model consisted of Embedding, Spatial Dropout, Dense, and Long Sh
 
 <pre><code>
 model = Sequential()
-model.add(Embedding(max_fatures, embed_dim,input_length = X.shape[1]))
+model.add(Embedding(max_features, embed_dim, input_length = X.shape[1]))
 model.add(SpatialDropout1D(0.4))
 model.add(LSTM(lstm_out, dropout=0.2, recurrent_dropout=0.2))
 model.add(Dense(2,activation='softmax'))
@@ -165,7 +164,6 @@ I trained the model with 7 epochs, but I wanted to use 10.
 After extracting a validation set, we can measure the overall score and accuracy of the model.
 <pre><code>
 validation_size = 1500
-
 X_validate = X_test[-validation_size:]
 Y_validate = Y_test[-validation_size:]
 X_test = X_test[:-validation_size]
