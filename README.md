@@ -2,7 +2,7 @@
 
 I submitted two different programs using different methods and algorithms to classify and predict the sentiment of sentences.
 The first program submitted used traditional methods to classify and predict the sentiment of sentences whereas the second program submitted used a Sequential Model
-to predict and classify sentiment values of the sentences.
+to predict and classify sentiment values of the sentences. In this brief README file, I will go over the important segments of code and my thinking behind why I did it the way I did. If you have any further questions please email me at kzhang138@gmail.com. 
 
 
 ## Ignition Hacks Sigma Problem Solution 1 By: Kenneth Zhang
